@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:provider_101/models/task.dart';
+import 'package:provider_101/task_notifier.dart';
 import 'package:provider_101/tasks_page.dart';
 import 'package:provider_101/widgets/create_task_widget.dart';
 import 'package:provider_101/widgets/upcoming_tasks.dart';
@@ -15,15 +17,13 @@ class CreateTaskPage extends StatefulWidget {
 }
 
 class _CreateTaskPageState extends State<CreateTaskPage> {
-  // Tasks list used everywhere
-  List<Task> tasks = [];
-
   @override
   void initState() {
     super.initState();
   }
 
-  List<Task> getUpcomingTasks() {
+  List<Task> getUpcomingTasks(TaskNotifier taskNotifier) {
+    List<Task> tasks = taskNotifier.tasks;
     List<Task> upComingCompletedTasks =
         tasks.where((t) => t.isCompleted == false).toList();
     if (upComingCompletedTasks.length > 3) {
@@ -44,7 +44,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => TasksPage(tasks),
+                    builder: (context) => TasksPage(),
                   ));
             },
             icon: Icon(Icons.all_inbox),
@@ -59,13 +59,17 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
           children: [
             CreateTaskWidget(
               onAddTask: (String taskName) {
-                tasks.add(Task(isCompleted: false, taskName: taskName));
-                setState(() {});
+                TaskNotifier taskNotifier =
+                    Provider.of<TaskNotifier>(context, listen: false);
+                taskNotifier.addTask(taskName);
               },
             ),
             SizedBox(height: 20),
             Flexible(
-              child: UpComingTasks(getUpcomingTasks()),
+              child: Consumer<TaskNotifier>(
+                builder: (context, taskNotifier, child) =>
+                    UpComingTasks(getUpcomingTasks(taskNotifier)),
+              ),
             ),
           ],
         ),

@@ -39,11 +39,13 @@ class _TaskWidgetState extends State<TaskWidget> {
             ),
           ),
           Checkbox(
-            checkColor: Colors.white,
-            activeColor: Colors.green,
-            value: widget.task.isCompleted,
-            onChanged: (value) => widget.onTaskCompleted(value),
-          )
+              checkColor: Colors.white,
+              activeColor: Colors.green,
+              value: widget.task.isCompleted,
+              onChanged: (value) {
+                setState(() {});
+                widget.onTaskCompleted(value);
+              })
         ]),
       ),
     );
